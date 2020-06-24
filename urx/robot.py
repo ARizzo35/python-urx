@@ -6,7 +6,6 @@ http://support.universal-robots.com/URRobot/RemoteAccess
 
 
 import math3d as m3d
-import numpy as np
 
 from urx.urrobot import URRobot
 
@@ -23,8 +22,8 @@ class Robot(URRobot):
     and includes support for setting a reference coordinate system
     """
 
-    def __init__(self, host, use_rt=False):
-        URRobot.__init__(self, host, use_rt)
+    def __init__(self, host, timeout=0.5):
+        URRobot.__init__(self, host, timeout)
         self.csys = m3d.Transform()
 
     def _get_lin_dist(self, target):
@@ -144,6 +143,7 @@ class Robot(URRobot):
         trans = self.get_pose(wait)
         return trans.pos
 
+    '''
     def speedl(self, velocities, acc, min_time):
         """
         move at given velocities until minimum min_time seconds
@@ -152,6 +152,7 @@ class Robot(URRobot):
         w = self.csys.orient * m3d.Vector(velocities[3:])
         vels = np.concatenate((v.array, w.array))
         return self.speedx("speedl", vels, acc, min_time)
+    '''
 
     def speedj(self, velocities, acc, min_time):
         """
@@ -159,6 +160,7 @@ class Robot(URRobot):
         """
         return self.speedx("speedj", velocities, acc, min_time)
 
+    '''
     def speedl_tool(self, velocities, acc, min_time):
         """
         move at given velocities in tool csys until minimum min_time seconds
@@ -167,6 +169,7 @@ class Robot(URRobot):
         v = pose.orient * m3d.Vector(velocities[:3])
         w = pose.orient * m3d.Vector(velocities[3:])
         self.speedl(np.concatenate((v.array, w.array)), acc, min_time)
+    '''
 
     def movex(self, command, pose, acc=0.01, vel=0.01, wait=True, relative=False, threshold=None):
         """

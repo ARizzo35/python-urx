@@ -8,7 +8,6 @@ import logging
 import numbers
 import collections
 
-from urx import urrtmon
 from urx import ursecmon
 
 __author__ = "Olivier Roulet-Dubonnet"
@@ -26,22 +25,18 @@ class URRobot(object):
     Python interface to socket interface of UR robot.
     programs are send to port 3002
     data is read from secondary interface(10Hz?) and real-time interface(125Hz) (called Matlab interface in documentation)
-    Since parsing the RT interface uses som CPU, and does not support all robots versions, it is disabled by default
-    The RT interfaces is only used for the get_force related methods
     Rmq: A program sent to the robot i executed immendiatly and any running program is stopped
     """
 
-    def __init__(self, host, use_rt=False):
+    def __init__(self, host, timeout=0.5):
         self.logger = logging.getLogger("urx")
         self.host = host
         self.csys = None
 
         self.logger.debug("Opening secondary monitor socket")
-        self.secmon = ursecmon.SecondaryMonitor(self.host)  # data from robot at 10Hz
+        self.secmon = ursecmon.SecondaryMonitor(self.host, timeout=timeout)  # data from robot at 10Hz
 
         self.rtmon = None
-        if use_rt:
-            self.rtmon = self.get_realtime_monitor()
         # precision of joint movem used to wait for move completion
         # the value must be conservative! otherwise we may wait forever
         self.joinEpsilon = 0.01
@@ -454,6 +449,7 @@ class URRobot(object):
         else:
             self.send_program("set real")
 
+    '''
     def get_realtime_monitor(self):
         """
         return a pointer to the realtime monitor object
@@ -465,6 +461,7 @@ class URRobot(object):
             self.rtmon.start()
         self.rtmon.set_csys(self.csys)
         return self.rtmon
+    '''
 
     def translate(self, vect, acc=0.01, vel=0.01, wait=True, command="movel"):
         """
